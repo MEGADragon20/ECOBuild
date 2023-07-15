@@ -19,6 +19,7 @@ GREY = (100, 100, 100)
 # Bildpfade
 HOUSE_IMAGE_PATH = "house.png"
 VILLA_IMAGE_PATH = "villa.png"
+MANSION_IMAGE_PATH = "mansion.png"
 INDUSTRIAL_UNIT_IMAGE_PATH = "Industrial_unit.png"
 FACTORY_IMAGE_PATH = "Factory.png"
 GARDEN_IMAGE_PATH = "garden.png"
@@ -34,6 +35,7 @@ pygame.display.set_caption("ECOBuild")
 # Hausbilder laden
 house_image = pygame.image.load(HOUSE_IMAGE_PATH)
 villa_image = pygame.image.load(VILLA_IMAGE_PATH)
+mansion_image = pygame.image.load(MANSION_IMAGE_PATH)
 
 # Fabrikbilder laden
 industrial_unit_image = pygame.image.load(INDUSTRIAL_UNIT_IMAGE_PATH)
@@ -62,6 +64,16 @@ class Villa:
 
     def draw(self, surface):
         surface.blit(villa_image, self.rect)
+
+class Mansion:
+    def __init__(self, x, y):
+        self.rect = mansion_image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.dragging = False
+
+    def draw(self, surface):
+        surface.blit(mansion_image, self.rect)
 
 class Industrial_unit:
     def __init__(self, x, y):
@@ -110,6 +122,7 @@ start_house2 = House(WIDTH // 2, HEIGHT // 2 - house_image.get_height())
 # Liste zum Speichern der zusätzlichen Häuser und Villen
 houses = [start_house1, start_house2]
 villas = []
+mansions = []
 industrial_units = []
 factories = []
 gardens = []
@@ -150,8 +163,8 @@ def draw_text(text, font, color, x, y, surface):
     surface.blit(text_surface, text_rect)
 
 # Anzahl Geld pro minute
-def earn(houses, villas, factories, industrial_units):
-    return len(houses) * 50 + len(villas) * 75 + len(factories) * 100 + len(industrial_units) * 150
+def earn(houses, villas, mansions, factories, industrial_units):
+    return len(houses) * 50 + len(villas) * 75 + len(mansions) * 100 + len(factories) * 100 + len(industrial_units) * 150
 
 # Zeit konfiguration
 pygame.time.set_timer(618, 60000)
@@ -173,6 +186,11 @@ while running:
             for villa in villas:
                 if villa.rect.collidepoint(event.pos):
                     villa.dragging = True
+                    break
+            # Prüfen, ob das Mausereignis innerhalb einer Mansion stattfindet
+            for mansion in mansions:
+                if mansion.rect.collidepoint(event.pos):
+                    mansion.dragging = True
                     break
             # Prüfen, ob das Mausereignis innerhalb eines zusätzlichen IU stattfindet
             for industrial_unit in industrial_units:
@@ -226,6 +244,8 @@ while running:
                 house.dragging = False
             for villa in villas:
                 villa.dragging = False
+            for mansion in mansions:
+                mansion.dragging = False
             for industrial_unit in industrial_units:
                 industrial_unit.dragging = False
             for factory in factories:
@@ -262,6 +282,15 @@ while running:
                             parks.append(new_park)
                             gardens.remove(garden)
                             gardens.remove(tester)
+            # Überprüfen auf Zusammenführung der Villen
+            for villa in villas:
+                for tester in villas:
+                    if tester != villa:
+                        if villa.rect.colliderect(tester):
+                            new_mansion = Mansion(tester.rect.x, tester.rect.y)
+                            mansions.append(new_mansion)
+                            villas.remove(villa)
+                            villas.remove(tester)
 
         elif event.type == pygame.MOUSEMOTION:
             # Gebäude verschieben, wenn sie gezogen werden
@@ -273,6 +302,10 @@ while running:
                 if villa.dragging:
                     villa.rect.x += event.rel[0]
                     villa.rect.y += event.rel[1]
+            for mansion in mansions:
+                if mansion.dragging:
+                    mansion.rect.x += event.rel[0]
+                    mansion.rect.y += event.rel[1]
             for industrial_unit in industrial_units:
                 if industrial_unit.dragging:
                     industrial_unit.rect.x += event.rel[0]
@@ -291,26 +324,10 @@ while running:
                     park.rect.y += event.rel[1]
 
         elif event.type == 618:
-            coins += earn(houses, villas, factories, industrial_units)
+            coins += earn(houses, villas, mansions, factories, industrial_units)
 
     # Hintergrund färben
     window.fill(GREEN)
-
-    # Zusätzliche Häuser zeichnen
-    for house in houses:
-        house.draw(window)
-
-    # Villen zeichnen
-    for villa in villas:
-        villa.draw(window)
-    
-    # Zusätzliche IU zeichnen
-    for industrial_unit in industrial_units:
-        industrial_unit.draw(window)
-
-    # Fabriken zeichnen
-    for factory in factories:
-        factory.draw(window)
 
     # Garten zeichnen
     for garden in gardens:
@@ -320,6 +337,25 @@ while running:
     for park in parks:
         park.draw(window)
 
+    # Fabriken zeichnen
+    for factory in factories:
+        factory.draw(window)   
+
+    # Mansion zeichnen
+    for mansion in mansions:
+        mansion.draw(window)
+    
+    # Villen zeichnen
+    for villa in villas:
+        villa.draw(window)
+
+    # Zusätzliche IU zeichnen
+    for industrial_unit in industrial_units:
+        industrial_unit.draw(window)
+
+    # Zusätzliche Häuser zeichnen
+    for house in houses:
+        house.draw(window)
     # Haus Button zeichnen
     if coins >= 100:
         pygame.draw.rect(window, BLACK, button_house_rect)
