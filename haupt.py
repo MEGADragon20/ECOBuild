@@ -28,7 +28,7 @@ pygame.display.set_caption("Drag and Drop")
 garden_image = pygame.image.load(GARDEN_IMAGE_PATH)
 park_image = pygame.image.load(PARK_IMAGE_PATH)
 
-class garden:
+class Garden:
     def __init__(self, x, y):
         self.rect = garden_image.get_rect()
         self.rect.x = x
@@ -38,7 +38,7 @@ class garden:
     def draw(self, surface):
         surface.blit(garden_image, self.rect)
 
-class park:
+class Park:
     def __init__(self, x, y):
         self.rect = park_image.get_rect()
         self.rect.x = x
@@ -53,7 +53,7 @@ class park:
 gardens = []
 parks = []
 
-# Button erstellen
+# Button_Park erstellen
 button_font = pygame.font.Font(None, 36)
 button_text = button_font.render("Weiteres Haus", True, WHITE)
 button_rect = button_text.get_rect()
@@ -62,8 +62,8 @@ button_rect.center = (WIDTH // 2, HEIGHT - 50)
 def locate_place():
     a = r.randint(64, 960)
     b = r.randint(64, 702)
-    for industrial_unit in gardens:
-        if a == industrial_unit.rect.x and b == industrial_unit.rect.y or a == industrial_unit.rect.x +64 and b == industrial_unit.rect.y +64:
+    for garden in gardens:
+        if a == garden.rect.x and b == garden.rect.y or a == garden.rect.x +64 and b == garden.rect.y +64:
             return locate_place()
     return a, b
 
@@ -76,60 +76,60 @@ while running:
             running = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
             # Prüfen, ob das Mausereignis innerhalb eines zusätzlichen Hauses stattfindet
-            for industrial_unit in gardens:
-                if industrial_unit.rect.collidepoint(event.pos):
-                    industrial_unit.dragging = True
+            for garden in gardens:
+                if garden.rect.collidepoint(event.pos):
+                    garden.dragging = True
                     break
             # Prüfen, ob das Mausereignis innerhalb einer park stattfindet
-            for factory in parks:
-                if factory.rect.collidepoint(event.pos):
-                    factory.dragging = True
+            for park in parks:
+                if park.rect.collidepoint(event.pos):
+                    park.dragging = True
                     break
             # Prüfen, ob der Button geklickt wurde
             if button_rect.collidepoint(event.pos):
                 x = pygame.mouse.get_pos()[0]
                 y = pygame.mouse.get_pos()[1]
                 x2, y2 = locate_place()
-                new_industrial_unit = garden(x2,y2)
-                gardens.append(new_industrial_unit)
+                new_garden = garden(x2,y2)
+                gardens.append(new_garden)
         elif event.type == pygame.MOUSEBUTTONUP:
             # Beenden des Ziehens aller Häuser und Villen
-            for industrial_unit in gardens:
-                industrial_unit.dragging = False
-            for factory in parks:
-                factory.dragging = False
+            for garden in gardens:
+                garden.dragging = False
+            for park in parks:
+                park.dragging = False
 
             # Überprüfen auf Zusammenführung der Häuser
-            for industrial_unit in gardens:
+            for garden in gardens:
                 for tester in gardens:
-                    if tester != industrial_unit:
-                        if industrial_unit.rect.colliderect(tester):
-                            new_Factory = park(tester.rect.x, tester.rect.y)
-                            parks.append(new_Factory)
-                            gardens.remove(industrial_unit)
+                    if tester != garden:
+                        if garden.rect.colliderect(tester):
+                            new_park = park(tester.rect.x, tester.rect.y)
+                            parks.append(new_park)
+                            gardens.remove(garden)
                             gardens.remove(tester)
 
         elif event.type == pygame.MOUSEMOTION:
             # Häuser und Villen verschieben, wenn sie gezogen werden
-            for industrial_unit in gardens:
-                if industrial_unit.dragging:
-                    industrial_unit.rect.x += event.rel[0]
-                    industrial_unit.rect.y += event.rel[1]
-            for factory in parks:
-                if factory.dragging:
-                    factory.rect.x += event.rel[0]
-                    factory.rect.y += event.rel[1]
+            for garden in gardens:
+                if garden.dragging:
+                    garden.rect.x += event.rel[0]
+                    garden.rect.y += event.rel[1]
+            for park in parks:
+                if park.dragging:
+                    park.rect.x += event.rel[0]
+                    park.rect.y += event.rel[1]
 
     # Hintergrund färben
     window.fill(GREEN)
 
     # Zusätzliche Häuser zeichnen
-    for industrial_unit in gardens:
-        industrial_unit.draw(window)
+    for garden in gardens:
+        garden.draw(window)
 
     # Villen zeichnen
-    for factory in parks:
-        factory.draw(window)
+    for park in parks:
+        park.draw(window)
 
     # Button zeichnen
     pygame.draw.rect(window, BLACK, button_rect)
