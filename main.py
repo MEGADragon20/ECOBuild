@@ -129,21 +129,21 @@ gardens = []
 parks = []
 
 # Button_Haus erstellen
-button_house_font = pygame.font.Font(None, 36)
-button_house_text = button_house_font.render("Haus", True, WHITE)
-button_house_rect = button_house_text.get_rect()
+button_house_font = pygame.font.SysFont('impact', 32)
+button_house_text = button_house_font.render("  Haus", True, WHITE)
+button_house_rect = pygame.Rect(100, 100, 87, 45)
 button_house_rect.center = (WIDTH // 2 -100, HEIGHT - 50)
 
 # Button_Fabrik erstellen
-button_factory_font = pygame.font.Font(None, 36)
-button_factory_text = button_factory_font.render("Fabrik", True, WHITE)
-button_factory_rect = button_factory_text.get_rect()
+button_factory_font = pygame.font.SysFont('impact', 32)
+button_factory_text = button_factory_font.render(" Fabrik", True, WHITE)
+button_factory_rect = pygame.Rect(100, 100, 95, 45)
 button_factory_rect.center = (WIDTH // 2 +100, HEIGHT - 50)
 
 # Button_Park erstellen
-button_park_font = pygame.font.Font(None, 36)
-button_park_text = button_park_font.render("Park", True, WHITE)
-button_park_rect = button_park_text.get_rect()
+button_park_font = pygame.font.SysFont('impact', 32)
+button_park_text = button_park_font.render("   Park", True, WHITE)
+button_park_rect = pygame.Rect(100, 100, 95, 45)
 button_park_rect.center = (WIDTH // 2, HEIGHT - 50)
 
 # Leeren Platz finden 
