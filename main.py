@@ -1,6 +1,7 @@
 import pygame
 import os
 import random as r
+import time
 
 # Initialisierung von Pygame
 pygame.init()
@@ -13,11 +14,14 @@ WINDOW_SIZE = (WIDTH, HEIGHT)
 GREEN = (181, 230, 29)
 WHITE = (255, 255, 255)
 BLACK = (0,0,0)
+GREY = (100, 100, 100)
 
 # Bildpfade
 HOUSE_IMAGE_PATH = "house.png"
 VILLA_IMAGE_PATH = "villa.png"
 
+#Geld
+coins = 100
 # Fenster erstellen
 window = pygame.display.set_mode(WINDOW_SIZE)
 pygame.display.set_caption("Drag and Drop")
@@ -60,6 +64,7 @@ button_text = button_font.render("Weiteres Haus", True, WHITE)
 button_rect = button_text.get_rect()
 button_rect.center = (WIDTH // 2, HEIGHT - 50)
 
+# Leeren Platz finden 
 def locate_place():
     a = r.randint(64, 960)
     b = r.randint(64, 702)
@@ -67,6 +72,20 @@ def locate_place():
         if a == house.rect.x and b == house.rect.y or a == house.rect.x +64 and b == house.rect.y +64:
             return locate_place()
     return a, b
+
+# Funktion, um Text auf dem Bildschirm anzuzeigen
+def draw_text(text, font, color, x, y, surface):
+    text_surface = font.render(text, True, color)
+    text_rect = text_surface.get_rect()
+    text_rect.topleft = (x, y)
+    surface.blit(text_surface, text_rect)
+
+# Anzahl Geld pro minute
+def earn(houses, villas):
+    return len(houses) * 50 + len(villas) * 75
+
+# Zeit konfiguration
+pygame.time.set_timer(618, 60000)
 
 # Hauptschleife
 running = True
@@ -86,13 +105,16 @@ while running:
                 if villa.rect.collidepoint(event.pos):
                     villa.dragging = True
                     break
-            # Prüfen, ob der Button geklickt wurde
+            # Prüfen, ob der Haus kaufen Button geklickt wurde
             if button_rect.collidepoint(event.pos):
-                x = pygame.mouse.get_pos()[0]
-                y = pygame.mouse.get_pos()[1]
-                x2, y2 = locate_place()
-                new_house = House(x2,y2)
-                houses.append(new_house)
+                if coins >= 100:
+                    coins -= 100
+                    x = pygame.mouse.get_pos()[0]
+                    y = pygame.mouse.get_pos()[1]
+                    x2, y2 = locate_place()
+                    new_house = House(x2,y2)
+                    houses.append(new_house)
+
         elif event.type == pygame.MOUSEBUTTONUP:
             # Beenden des Ziehens aller Häuser und Villen
             for house in houses:
@@ -121,6 +143,8 @@ while running:
                     villa.rect.x += event.rel[0]
                     villa.rect.y += event.rel[1]
 
+        elif event.type == 618:
+            coins += earn(houses, villas)
     # Hintergrund färben
     window.fill(GREEN)
 
@@ -133,9 +157,15 @@ while running:
         villa.draw(window)
 
     # Button zeichnen
-    pygame.draw.rect(window, BLACK, button_rect)
+    if coins >= 100:
+        pygame.draw.rect(window, BLACK, button_rect)
+    else:
+        pygame.draw.rect(window, GREY, button_rect)
     window.blit(button_text, button_rect)
 
+    # Geldanzahl
+    draw_text("Münzen: {}".format(coins),pygame.font.Font(None, 36) ,BLACK, 15, 20, window)
+    
     # Fenster aktualisieren
     pygame.display.update()
 
