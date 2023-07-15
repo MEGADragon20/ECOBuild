@@ -214,10 +214,8 @@ while running:
                     break
             # Prüfen, ob der Haus kaufen Button geklickt wurde
             if button_house_rect.collidepoint(event.pos):
-                if coins >= 100:
-                    coins -= 100
-                    x = pygame.mouse.get_pos()[0]
-                    y = pygame.mouse.get_pos()[1]
+                if coins >= 80:
+                    coins -= 80
                     x2, y2 = locate_place()
                     new_house = House(x2,y2)
                     houses.append(new_house)
@@ -225,18 +223,16 @@ while running:
             if button_factory_rect.collidepoint(event.pos):
                 if coins >= 200:
                     coins -=200
-                    x = pygame.mouse.get_pos()[0]
-                    y = pygame.mouse.get_pos()[1]
                     x2, y2 = locate_place()
                     new_industrial_unit = Industrial_unit(x2,y2)
                     industrial_units.append(new_industrial_unit)
             # Prüfen, ob der Park kaufen Button geklickt wurde
             if button_park_rect.collidepoint(event.pos):
-                x = pygame.mouse.get_pos()[0]
-                y = pygame.mouse.get_pos()[1]
-                x2, y2 = locate_place()
-                new_garden = Garden(x2,y2)
-                gardens.append(new_garden)
+                if coins >= 150:
+                    coins -= 150
+                    x2, y2 = locate_place()
+                    new_garden = Garden(x2,y2)
+                    gardens.append(new_garden)
 
         elif event.type == pygame.MOUSEBUTTONUP:
             # Beenden des Ziehens aller Gebäude
@@ -357,7 +353,7 @@ while running:
     for house in houses:
         house.draw(window)
     # Haus Button zeichnen
-    if coins >= 100:
+    if coins >= 80:
         pygame.draw.rect(window, BLACK, button_house_rect)
     else:
         pygame.draw.rect(window, GREY, button_house_rect)
