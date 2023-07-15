@@ -1,15 +1,16 @@
 import pygame
 import os
+import random as r
 
 # Initialisierung von Pygame
 pygame.init()
 
 # Fenstergröße
-WIDTH, HEIGHT = 800, 600
+WIDTH, HEIGHT = 1024, 768
 WINDOW_SIZE = (WIDTH, HEIGHT)
 
 # Farben
-GREEN = (0, 255, 0)
+GREEN = (181, 230, 29)
 WHITE = (255, 255, 255)
 BLACK = (0,0,0)
 
@@ -36,16 +37,17 @@ class House:
         surface.blit(house_image, self.rect)
 
 class Villa:
-    def __init__(self):
+    def __init__(self, x, y):
         self.rect = villa_image.get_rect()
-        self.image = villa_image
+        self.rect.x = x
+        self.rect.y = y
         self.dragging = False
 
     def draw(self, surface):
-        surface.blit(self.image, self.rect)
+        surface.blit(villa_image, self.rect)
 
 # Start-Häuser erstellen
-start_house1 = House(WIDTH // 2 - house_image.get_width(), HEIGHT // 2 - house_image.get_height())
+start_house1 = House(WIDTH // 2 - house_image.get_width() - 30, HEIGHT // 2 - house_image.get_height() + 20)
 start_house2 = House(WIDTH // 2, HEIGHT // 2 - house_image.get_height())
 
 # Liste zum Speichern der zusätzlichen Häuser und Villen
@@ -54,7 +56,7 @@ villas = []
 
 # Button erstellen
 button_font = pygame.font.Font(None, 36)
-button_text = button_font.render("Weiteres Haus", True, BLACK)
+button_text = button_font.render("Weiteres Haus", True, WHITE)
 button_rect = button_text.get_rect()
 button_rect.center = (WIDTH // 2, HEIGHT - 50)
 
@@ -78,7 +80,7 @@ while running:
             if button_rect.collidepoint(event.pos):
                 x = pygame.mouse.get_pos()[0]
                 y = pygame.mouse.get_pos()[1]
-                new_house = House(x, y)
+                new_house = House(r.randint(64, 960), r.randint(64, 702))
                 houses.append(new_house)
         elif event.type == pygame.MOUSEBUTTONUP:
             # Beenden des Ziehens aller Häuser und Villen
@@ -92,11 +94,13 @@ while running:
                 for tester in houses:
                     if tester != house:
                         if house.rect.colliderect(tester):
-                            new_villa = Villa()
+                            print("Collision")
+                            new_villa = Villa(r.randint(64, 960), r.randint(64, 702))
                             villas.append(new_villa)
                             houses.remove(house)
+                            houses.remove(tester)
                             break
-                    break
+                        break
 
         elif event.type == pygame.MOUSEMOTION:
             # Häuser und Villen verschieben, wenn sie gezogen werden
@@ -121,7 +125,7 @@ while running:
         villa.draw(window)
 
     # Button zeichnen
-    pygame.draw.rect(window, WHITE, button_rect)
+    pygame.draw.rect(window, BLACK, button_rect)
     window.blit(button_text, button_rect)
 
     # Fenster aktualisieren
