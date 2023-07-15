@@ -60,6 +60,14 @@ button_text = button_font.render("Weiteres Haus", True, WHITE)
 button_rect = button_text.get_rect()
 button_rect.center = (WIDTH // 2, HEIGHT - 50)
 
+def locate_place():
+    a = r.randint(64, 960)
+    b = r.randint(64, 702)
+    for house in houses:
+        if a == house.rect.x and b == house.rect.y or a == house.rect.x +64 and b == house.rect.y +64:
+            return locate_place()
+    return a, b
+
 # Hauptschleife
 running = True
 while running:
@@ -72,15 +80,18 @@ while running:
             for house in houses:
                 if house.rect.collidepoint(event.pos):
                     house.dragging = True
+                    break
             # Prüfen, ob das Mausereignis innerhalb einer Villa stattfindet
             for villa in villas:
                 if villa.rect.collidepoint(event.pos):
                     villa.dragging = True
+                    break
             # Prüfen, ob der Button geklickt wurde
             if button_rect.collidepoint(event.pos):
                 x = pygame.mouse.get_pos()[0]
                 y = pygame.mouse.get_pos()[1]
-                new_house = House(r.randint(64, 960), r.randint(64, 702))
+                x2, y2 = locate_place()
+                new_house = House(x2,y2)
                 houses.append(new_house)
         elif event.type == pygame.MOUSEBUTTONUP:
             # Beenden des Ziehens aller Häuser und Villen
@@ -94,13 +105,10 @@ while running:
                 for tester in houses:
                     if tester != house:
                         if house.rect.colliderect(tester):
-                            print("Collision")
-                            new_villa = Villa(r.randint(64, 960), r.randint(64, 702))
+                            new_villa = Villa(tester.rect.x, tester.rect.y)
                             villas.append(new_villa)
                             houses.remove(house)
                             houses.remove(tester)
-                            break
-                        break
 
         elif event.type == pygame.MOUSEMOTION:
             # Häuser und Villen verschieben, wenn sie gezogen werden
