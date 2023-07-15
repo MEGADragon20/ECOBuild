@@ -1,59 +1,143 @@
-import random as r
+import pygame
 import os
-import time as t
-import pygame as pg
+import random as r
 
-#Formalia
+# Initialisierung von Pygame
+pygame.init()
 
-if not pg.image.get_extended():
-    raise SystemExit("Sorry, extended image module required")
+# Fenstergröße
+WIDTH, HEIGHT = 1024, 768
+WINDOW_SIZE = (WIDTH, HEIGHT)
 
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 450
-screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-SCREENRECT = pg.Rect(0, 0, 640, 480)
+# Farben
+GREEN = (181, 230, 29)
+WHITE = (255, 255, 255)
+BLACK = (0,0,0)
 
-#Konstanten
+# Bildpfade
+HOUSE_IMAGE_PATH = "house.png"
+VILLA_IMAGE_PATH = "villa.png"
 
-TAXES_XSMALL = 20 #XSmall house taxes
-TAXES_SMALL = 35 #Small house taxes
-TAXES_MEDIUM = 50 #Medium house taxes
-TAXES_LARGE = 75 #Large house taxes
-TAXES_XLARGE = 100 #XLarge house taxes
+# Fenster erstellen
+window = pygame.display.set_mode(WINDOW_SIZE)
+pygame.display.set_caption("Drag and Drop")
 
-main_dir = os.path.split(os.path.abspath(__file__))[0]
+# Hausbilder laden
+house_image = pygame.image.load(HOUSE_IMAGE_PATH)
+villa_image = pygame.image.load(VILLA_IMAGE_PATH)
 
-def load_image(file):
-    file = os.path.join(main_dir, "data", file)
-    try:
-        surface = pg.image.load(file)
-    except pg.error:
-        raise SystemExit(f'Could not load image "{file}" {pg.get_error()}')
-    return surface.convert()
+class House:
+    def __init__(self, x, y):
+        self.rect = house_image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.dragging = False
 
+    def draw(self, surface):
+        surface.blit(house_image, self.rect)
 
-def load_sound(file):
-    if not pg.mixer:
-        return None
-    file = os.path.join(main_dir, "data", file)
-    try:
-        sound = pg.mixer.Sound(file)
-        return sound
-    except pg.error:
-        print(f"Warning, unable to load, {file}")
-    return None
+class Villa:
+    def __init__(self, x, y):
+        self.rect = villa_image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.dragging = False
 
-class House(pg.sprite.Sprite):
-    def __init__(self, size: int = 1, *groups):
-        pg.sprite.Sprite.__init__(self, *groups)
-        self.image = self.images[0]
-        self.rect = self.image.get_rect()
-        self.frame = 0
-        if self.facing < 0:
-            self.rect.right = SCREENRECT.right
-    def create(self):
-        IMAGE = pg.image.load("house_test.png").convert()
-        rect = IMAGE.get_rect()
-        rect.center = (64,64)
+    def draw(self, surface):
+        surface.blit(villa_image, self.rect)
 
+# Start-Häuser erstellen
+start_house1 = House(WIDTH // 2 - house_image.get_width() - 30, HEIGHT // 2 - house_image.get_height() + 20)
+start_house2 = House(WIDTH // 2, HEIGHT // 2 - house_image.get_height())
 
+# Liste zum Speichern der zusätzlichen Häuser und Villen
+houses = [start_house1, start_house2]
+villas = []
+
+# Button erstellen
+button_font = pygame.font.Font(None, 36)
+button_text = button_font.render("Weiteres Haus", True, WHITE)
+button_rect = button_text.get_rect()
+button_rect.center = (WIDTH // 2, HEIGHT - 50)
+
+def locate_place():
+    a = r.randint(64, 960)
+    b = r.randint(64, 702)
+    for house in houses:
+        if a == house.rect.x and b == house.rect.y or a == house.rect.x +64 and b == house.rect.y +64:
+            return locate_place()
+    return a, b
+
+# Hauptschleife
+running = True
+while running:
+    # Ereignisse überprüfen
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            # Prüfen, ob das Mausereignis innerhalb eines zusätzlichen Hauses stattfindet
+            for house in houses:
+                if house.rect.collidepoint(event.pos):
+                    house.dragging = True
+                    break
+            # Prüfen, ob das Mausereignis innerhalb einer Villa stattfindet
+            for villa in villas:
+                if villa.rect.collidepoint(event.pos):
+                    villa.dragging = True
+                    break
+            # Prüfen, ob der Button geklickt wurde
+            if button_rect.collidepoint(event.pos):
+                x = pygame.mouse.get_pos()[0]
+                y = pygame.mouse.get_pos()[1]
+                x2, y2 = locate_place()
+                new_house = House(x2,y2)
+                houses.append(new_house)
+        elif event.type == pygame.MOUSEBUTTONUP:
+            # Beenden des Ziehens aller Häuser und Villen
+            for house in houses:
+                house.dragging = False
+            for villa in villas:
+                villa.dragging = False
+
+            # Überprüfen auf Zusammenführung der Häuser
+            for house in houses:
+                for tester in houses:
+                    if tester != house:
+                        if house.rect.colliderect(tester):
+                            new_villa = Villa(tester.rect.x, tester.rect.y)
+                            villas.append(new_villa)
+                            houses.remove(house)
+                            houses.remove(tester)
+
+        elif event.type == pygame.MOUSEMOTION:
+            # Häuser und Villen verschieben, wenn sie gezogen werden
+            for house in houses:
+                if house.dragging:
+                    house.rect.x += event.rel[0]
+                    house.rect.y += event.rel[1]
+            for villa in villas:
+                if villa.dragging:
+                    villa.rect.x += event.rel[0]
+                    villa.rect.y += event.rel[1]
+
+    # Hintergrund färben
+    window.fill(GREEN)
+
+    # Zusätzliche Häuser zeichnen
+    for house in houses:
+        house.draw(window)
+
+    # Villen zeichnen
+    for villa in villas:
+        villa.draw(window)
+
+    # Button zeichnen
+    pygame.draw.rect(window, BLACK, button_rect)
+    window.blit(button_text, button_rect)
+
+    # Fenster aktualisieren
+    pygame.display.update()
+
+# Pygame beenden
+pygame.quit()
