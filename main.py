@@ -19,16 +19,23 @@ GREY = (100, 100, 100)
 # Bildpfade
 HOUSE_IMAGE_PATH = "house.png"
 VILLA_IMAGE_PATH = "villa.png"
+INDUSTRIAL_UNIT_IMAGE_PATH = "Industrial_unit.png"
+FACTORY_IMAGE_PATH = "Factory.png"
 
 #Geld
 coins = 100
+
 # Fenster erstellen
 window = pygame.display.set_mode(WINDOW_SIZE)
-pygame.display.set_caption("Drag and Drop")
+pygame.display.set_caption("ECOBuild")
 
 # Hausbilder laden
 house_image = pygame.image.load(HOUSE_IMAGE_PATH)
 villa_image = pygame.image.load(VILLA_IMAGE_PATH)
+
+# Fabrikbilder laden
+industrial_unit_image = pygame.image.load(INDUSTRIAL_UNIT_IMAGE_PATH)
+Factory_image = pygame.image.load(FACTORY_IMAGE_PATH)
 
 class House:
     def __init__(self, x, y):
@@ -50,6 +57,26 @@ class Villa:
     def draw(self, surface):
         surface.blit(villa_image, self.rect)
 
+class Industrial_unit:
+    def __init__(self, x, y):
+        self.rect = industrial_unit_image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.dragging = False
+
+    def draw(self, surface):
+        surface.blit(industrial_unit_image, self.rect)
+
+class Factory:
+    def __init__(self, x, y):
+        self.rect = Factory_image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.dragging = False
+
+    def draw(self, surface):
+        surface.blit(Factory_image, self.rect)
+
 # Start-Häuser erstellen
 start_house1 = House(WIDTH // 2 - house_image.get_width() - 30, HEIGHT // 2 - house_image.get_height() + 20)
 start_house2 = House(WIDTH // 2, HEIGHT // 2 - house_image.get_height())
@@ -57,12 +84,20 @@ start_house2 = House(WIDTH // 2, HEIGHT // 2 - house_image.get_height())
 # Liste zum Speichern der zusätzlichen Häuser und Villen
 houses = [start_house1, start_house2]
 villas = []
+industrial_units = []
+factories = []
 
-# Button erstellen
-button_font = pygame.font.Font(None, 36)
-button_text = button_font.render("Weiteres Haus", True, WHITE)
-button_rect = button_text.get_rect()
-button_rect.center = (WIDTH // 2, HEIGHT - 50)
+# Button_Haus erstellen
+button_house_font = pygame.font.Font(None, 36)
+button_house_text = button_house_font.render("Haus", True, WHITE)
+button_house_rect = button_house_text.get_rect()
+button_house_rect.center = (WIDTH // 2 -100, HEIGHT - 50)
+
+# Button_Fabrik erstellen
+button_factory_font = pygame.font.Font(None, 36)
+button_factory_text = button_factory_font.render("Fabrik", True, WHITE)
+button_factory_rect = button_factory_text.get_rect()
+button_factory_rect.center = (WIDTH // 2 +100, HEIGHT - 50)
 
 # Leeren Platz finden 
 def locate_place():
@@ -81,8 +116,8 @@ def draw_text(text, font, color, x, y, surface):
     surface.blit(text_surface, text_rect)
 
 # Anzahl Geld pro minute
-def earn(houses, villas):
-    return len(houses) * 50 + len(villas) * 75
+def earn(houses, villas, factories, industrial_units):
+    return len(houses) * 50 + len(villas) * 75 + len(factories) * 100 + len(industrial_units) * 150
 
 # Zeit konfiguration
 pygame.time.set_timer(618, 60000)
@@ -105,8 +140,18 @@ while running:
                 if villa.rect.collidepoint(event.pos):
                     villa.dragging = True
                     break
+            # Prüfen, ob das Mausereignis innerhalb eines zusätzlichen IU stattfindet
+            for industrial_unit in industrial_units:
+                if industrial_unit.rect.collidepoint(event.pos):
+                    industrial_unit.dragging = True
+                    break
+            # Prüfen, ob das Mausereignis innerhalb einer Fabrik stattfindet
+            for factory in factories:
+                if factory.rect.collidepoint(event.pos):
+                    factory.dragging = True
+                    break
             # Prüfen, ob der Haus kaufen Button geklickt wurde
-            if button_rect.collidepoint(event.pos):
+            if button_house_rect.collidepoint(event.pos):
                 if coins >= 100:
                     coins -= 100
                     x = pygame.mouse.get_pos()[0]
@@ -114,13 +159,26 @@ while running:
                     x2, y2 = locate_place()
                     new_house = House(x2,y2)
                     houses.append(new_house)
+            # Prüfen, ob der Fabrik kaufen Button geklickt wurde
+            if button_factory_rect.collidepoint(event.pos):
+                if coins >= 200:
+                    coins -200
+                    x = pygame.mouse.get_pos()[0]
+                    y = pygame.mouse.get_pos()[1]
+                    x2, y2 = locate_place()
+                    new_industrial_unit = Industrial_unit(x2,y2)
+                    industrial_units.append(new_industrial_unit)
 
         elif event.type == pygame.MOUSEBUTTONUP:
-            # Beenden des Ziehens aller Häuser und Villen
+            # Beenden des Ziehens aller Gebäude
             for house in houses:
                 house.dragging = False
             for villa in villas:
                 villa.dragging = False
+            for industrial_unit in industrial_units:
+                industrial_unit.dragging = False
+            for factory in factories:
+                factory.dragging = False
 
             # Überprüfen auf Zusammenführung der Häuser
             for house in houses:
@@ -131,9 +189,18 @@ while running:
                             villas.append(new_villa)
                             houses.remove(house)
                             houses.remove(tester)
+            # Überprüfen auf Zusammenführung der Fabriken
+            for industrial_unit in industrial_units:
+                for tester in industrial_units:
+                    if tester != industrial_unit:
+                        if industrial_unit.rect.colliderect(tester):
+                            new_Factory = Factory(tester.rect.x, tester.rect.y)
+                            factories.append(new_Factory)
+                            industrial_units.remove(industrial_unit)
+                            industrial_units.remove(tester)
 
         elif event.type == pygame.MOUSEMOTION:
-            # Häuser und Villen verschieben, wenn sie gezogen werden
+            # Gebäude verschieben, wenn sie gezogen werden
             for house in houses:
                 if house.dragging:
                     house.rect.x += event.rel[0]
@@ -142,9 +209,17 @@ while running:
                 if villa.dragging:
                     villa.rect.x += event.rel[0]
                     villa.rect.y += event.rel[1]
+            for industrial_unit in industrial_units:
+                if industrial_unit.dragging:
+                    industrial_unit.rect.x += event.rel[0]
+                    industrial_unit.rect.y += event.rel[1]
+            for factory in factories:
+                if factory.dragging:
+                    factory.rect.x += event.rel[0]
+                    factory.rect.y += event.rel[1]
 
         elif event.type == 618:
-            coins += earn(houses, villas)
+            coins += earn(houses, villas, factories, industrial_units)
     # Hintergrund färben
     window.fill(GREEN)
 
@@ -155,13 +230,28 @@ while running:
     # Villen zeichnen
     for villa in villas:
         villa.draw(window)
+    
+    # Zusätzliche IU zeichnen
+    for industrial_unit in industrial_units:
+        industrial_unit.draw(window)
 
-    # Button zeichnen
+    # Fabriken zeichnen
+    for factory in factories:
+        factory.draw(window)
+
+    # Haus Button zeichnen
     if coins >= 100:
-        pygame.draw.rect(window, BLACK, button_rect)
+        pygame.draw.rect(window, BLACK, button_house_rect)
     else:
-        pygame.draw.rect(window, GREY, button_rect)
-    window.blit(button_text, button_rect)
+        pygame.draw.rect(window, GREY, button_house_rect)
+    window.blit(button_house_text, button_house_rect)
+
+    # Fabrik Button zeichnen
+    if coins >= 200:
+        pygame.draw.rect(window, BLACK, button_factory_rect)
+    else:
+        pygame.draw.rect(window, GREY, button_factory_rect)
+    window.blit(button_factory_text, button_factory_rect)
 
     # Geldanzahl
     draw_text("Münzen: {}".format(coins),pygame.font.Font(None, 36) ,BLACK, 15, 20, window)

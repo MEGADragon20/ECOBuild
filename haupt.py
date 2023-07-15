@@ -55,7 +55,7 @@ factories = []
 
 # Button erstellen
 button_font = pygame.font.Font(None, 36)
-button_text = button_font.render("Weiteres Haus", True, WHITE)
+button_text = button_font.render("Fabrik", True, WHITE)
 button_rect = button_text.get_rect()
 button_rect.center = (WIDTH // 2, HEIGHT - 50)
 
