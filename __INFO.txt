@@ -1,0 +1,23 @@
+1.1.~.~
+- LVL 2 Nature
+- LVL 2 Industry
+- LVL 3 Residential Area
+- Pollution --> No more Industry Buildings
+- Money var
+- Soundtrack
+
+1.2.~.~
+- LVL 3 Nature
+- LVL 3 Industry
+- LVL 4 Residential Area
+- Pollution --> Depoblation
+- Citizens var
+- Audio Effects
+
+1.3.~.~
+- LVL 5 Nature
+- LVL 5 Industry
+- LVL 6 Residential Area
+- LVL 1 Town Hall
+- Streets
+- Pollution --> Ambient changes

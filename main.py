@@ -26,7 +26,7 @@ GARDEN_IMAGE_PATH = "garden.png"
 PARK_IMAGE_PATH = "park.png"
 
 #Geld
-coins = 100
+coins = 1000
 
 # Fenster erstellen
 window = pygame.display.set_mode(WINDOW_SIZE)
@@ -164,7 +164,7 @@ def draw_text(text, font, color, x, y, surface):
 
 # Anzahl Geld pro minute
 def earn(houses, villas, mansions, factories, industrial_units):
-    return len(houses) * 50 + len(villas) * 75 + len(mansions) * 100 + len(factories) * 100 + len(industrial_units) * 150
+    return len(houses) * 20 + len(villas) * 60 + len(mansions) * 150 + len(factories) * 100 + len(industrial_units) * 150
 
 # Zeit konfiguration
 pygame.time.set_timer(618, 60000)
@@ -221,7 +221,7 @@ while running:
                     houses.append(new_house)
             # Prüfen, ob der Fabrik kaufen Button geklickt wurde
             if button_factory_rect.collidepoint(event.pos):
-                if coins >= 200:
+                if coins >= 200 and len(gardens) + len(parks) >= len(industrial_units) + len(factories):
                     coins -=200
                     x2, y2 = locate_place()
                     new_industrial_unit = Industrial_unit(x2,y2)
@@ -360,14 +360,17 @@ while running:
     window.blit(button_house_text, button_house_rect)
 
     # Fabrik Button zeichnen
-    if coins >= 200:
+    if coins >= 200 and len(gardens) + len(parks) >= len(industrial_units) + len(factories):
         pygame.draw.rect(window, BLACK, button_factory_rect)
     else:
         pygame.draw.rect(window, GREY, button_factory_rect)
     window.blit(button_factory_text, button_factory_rect)
 
     # Park Button zeichnen
-    pygame.draw.rect(window, BLACK, button_park_rect)
+    if coins >= 150:
+        pygame.draw.rect(window, BLACK, button_park_rect)
+    else:
+        pygame.draw.rect(window, GREY, button_park_rect)
     window.blit(button_park_text, button_park_rect)
 
     # Geldanzahl
