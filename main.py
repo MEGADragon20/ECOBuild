@@ -221,7 +221,7 @@ while running:
                     houses.append(new_house)
             # Prüfen, ob der Fabrik kaufen Button geklickt wurde
             if button_factory_rect.collidepoint(event.pos):
-                if coins >= 200 and len(gardens) + len(parks) >= len(industrial_units) + len(factories):
+                if coins >= 200 and len(gardens) + len(parks)*2 >= len(industrial_units) + len(factories):
                     coins -=200
                     x2, y2 = locate_place()
                     new_industrial_unit = Industrial_unit(x2,y2)
@@ -354,23 +354,23 @@ while running:
         house.draw(window)
     # Haus Button zeichnen
     if coins >= 80:
-        pygame.draw.rect(window, BLACK, button_house_rect)
+        pygame.draw.rect(window, BLACK, button_house_rect,0,5)
     else:
-        pygame.draw.rect(window, GREY, button_house_rect)
+        pygame.draw.rect(window, GREY, button_house_rect,0,5)
     window.blit(button_house_text, button_house_rect)
 
     # Fabrik Button zeichnen
-    if coins >= 200 and len(gardens) + len(parks) >= len(industrial_units) + len(factories):
-        pygame.draw.rect(window, BLACK, button_factory_rect)
+    if coins >= 200 and len(gardens) + len(parks)*2 >= len(industrial_units) + len(factories):
+        pygame.draw.rect(window, BLACK, button_factory_rect, 0, 5)
     else:
-        pygame.draw.rect(window, GREY, button_factory_rect)
+        pygame.draw.rect(window, GREY, button_factory_rect,0,5)
     window.blit(button_factory_text, button_factory_rect)
 
     # Park Button zeichnen
     if coins >= 150:
-        pygame.draw.rect(window, BLACK, button_park_rect)
+        pygame.draw.rect(window, BLACK, button_park_rect, 0,5)
     else:
-        pygame.draw.rect(window, GREY, button_park_rect)
+        pygame.draw.rect(window, GREY, button_park_rect, 0,5)
     window.blit(button_park_text, button_park_rect)
 
     # Geldanzahl
