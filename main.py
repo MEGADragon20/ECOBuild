@@ -30,7 +30,8 @@ PARK_IMAGE_PATH = "park.png"
 coins = 1000
 
 # Fenster erstellen
-window = pygame.display.set_mode((WINDOW_SIZE), pygame.FULLSCREEN)
+window = pygame.display.set_mode((WINDOW_SIZE))
+is_fullscreen = False
 pygame.display.set_caption("ECOBuild")
 
 # Hausbilder laden
@@ -267,6 +268,18 @@ while running:
                     gardens.append(new_garden)
                 else:
                     messageboxtext = "Du brauchst 150 Münzen, um ein Park zu kaufen"
+
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_f:
+                # Überprüfe den aktuellen Fenstermodus
+                if is_fullscreen:
+                    # Wenn Vollbildmodus aktiv ist, wechsle zu Fenstermodus
+                    pygame.display.set_mode(WINDOW_SIZE, pygame.RESIZABLE)
+                    is_fullscreen = False
+                else:
+                    # Wenn Fenstermodus aktiv ist, wechsle zu Vollbildmodus
+                    pygame.display.set_mode(WINDOW_SIZE, pygame.FULLSCREEN)
+                    is_fullscreen = True
 
         elif event.type == pygame.MOUSEBUTTONUP:
             # Beenden des Ziehens aller Gebäude
