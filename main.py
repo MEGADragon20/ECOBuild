@@ -350,7 +350,8 @@ while running:
                         if mansion.rect.colliderect(tester):
                             new_manor = Manor(tester.rect.x, tester.rect.y)
                             manors.append(new_manor)
-                            mansions.remove(mansion)
+                            if mansion in mansions:
+                                mansions.remove(mansion)
                             mansions.remove(tester)
 
         elif event.type == pygame.MOUSEMOTION:
