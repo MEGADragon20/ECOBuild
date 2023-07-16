@@ -2,6 +2,9 @@ import pygame
 import os
 import random as r
 import time
+import tkinter as tk
+from tkinter import *
+from tkinter import messagebox
 
 # Initialisierung von Pygame
 pygame.init()
@@ -237,6 +240,9 @@ while running:
                     x2, y2 = locate_place()
                     new_house = House(x2,y2)
                     houses.append(new_house)
+                else:
+                    Tk().wm_withdraw()
+                    messagebox.showerror("Error", "Du brauchst 80 Münzen, um ein Haus zu kaufen")
             # Prüfen, ob der Fabrik kaufen Button geklickt wurde
             if button_factory_rect.collidepoint(event.pos):
                 if coins >= 200 and len(gardens) + len(parks)*2 >= len(industrial_units) + len(factories):
@@ -244,6 +250,13 @@ while running:
                     x2, y2 = locate_place()
                     new_industrial_unit = Industrial_unit(x2,y2)
                     industrial_units.append(new_industrial_unit)
+                else:
+                    Tk().wm_withdraw()
+                    messagebox.showerror("Error", "Du brauchst 200 Münzen, um eine Fabrik zu kaufen und du baue Parks um die Umwelt nicht zu sehr zu belasten")
+
+
+
+                
             # Prüfen, ob der Park kaufen Button geklickt wurde
             if button_park_rect.collidepoint(event.pos):
                 if coins >= 150:
@@ -251,6 +264,9 @@ while running:
                     x2, y2 = locate_place()
                     new_garden = Garden(x2,y2)
                     gardens.append(new_garden)
+                else:
+                    Tk().wm_withdraw()
+                    messagebox.showerror("Error", "Du brauchst 150 Münzen, um ein Park zu kaufen")
 
         elif event.type == pygame.MOUSEBUTTONUP:
             # Beenden des Ziehens aller Gebäude
