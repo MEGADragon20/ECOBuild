@@ -33,8 +33,8 @@ PARK_IMAGE_PATH = "park.png"
 coins = 1000
 
 # Fenster erstellen
-window = pygame.display.set_mode((WINDOW_SIZE), pygame.FULLSCREEN)
-is_fullscreen = True
+window = pygame.display.set_mode((WINDOW_SIZE))
+is_fullscreen = False
 pygame.display.set_caption("ECOBuild")
 
 # Hausbilder laden
