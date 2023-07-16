@@ -8,7 +8,7 @@
 1.2.~.~
 - LVL 3 Nature
 - LVL 3 Industry
-- LVL 4 Residential Area
+- LVL 5 Residential Area
 - Pollution --> Depoblation
 - Citizens var
 

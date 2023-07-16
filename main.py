@@ -377,7 +377,7 @@ while running:
                 for tester in factories:
                     if tester != factories:
                         if factory.rect.colliderect(tester):
-                            new_industrial_plant = Mansion(tester.rect.x, tester.rect.y)
+                            new_industrial_plant = Industrial_Plant(tester.rect.x, tester.rect.y)
                             industrial_plants.append(new_industrial_plant)
                             if factory in factories:
                                 factories.remove(factory)
