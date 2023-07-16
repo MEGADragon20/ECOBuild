@@ -30,7 +30,8 @@ PARK_IMAGE_PATH = "park.png"
 coins = 1000
 
 # Fenster erstellen
-window = pygame.display.set_mode((WINDOW_SIZE))
+bg = pygame.image.load("background.png")
+window = pygame.display.set_mode(WINDOW_SIZE)
 is_fullscreen = False
 pygame.display.set_caption("ECOBuild")
 
@@ -384,9 +385,8 @@ while running:
         elif event.type == 618:
             coins += earn(houses, villas, mansions, factories, industrial_units)
             messageboxtext = None
-
-    # Hintergrund färben
-    window.fill(GREEN)
+        
+    window.blit(bg, (0,0))
 
     # Fabriken zeichnen
     for factory in factories:
@@ -445,6 +445,7 @@ while running:
     
     if messageboxtext is not None:
         message_box(messageboxtext, pygame.font.Font(None, 16), window)
+
 
     # Fenster aktualisieren
     pygame.display.update()
