@@ -28,6 +28,7 @@ PARK_IMAGE_PATH = "park.png"
 
 # Start Variablen
 coins = 80
+
 habs = 0
 
 # Fenster erstellen
@@ -200,6 +201,7 @@ pygame.time.set_timer(618, 60000)
 # Hauptschleife
 running = True
 while running:
+    habs = count_habs(houses, villas, mansions, manors)
     # Ereignisse überprüfen
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -256,7 +258,7 @@ while running:
                     messageboxtext = "Du brauchst 80 Münzen, um ein Haus zu kaufen"
             # Prüfen, ob der Fabrik kaufen Button geklickt wurde
             if button_factory_rect.collidepoint(event.pos):
-                if coins >= 200 and len(gardens) + len(parks)*2 >= len(industrial_units) + len(factories):
+                if coins >= 200 and len(gardens) + len(parks)*2 >= len(industrial_units) + len(factories) and habs > len(industrial_units) * 1 + len(factories) * 2:
                     coins -=200
                     x2, y2 = locate_place()
                     new_industrial_unit = Industrial_unit(x2,y2)
@@ -446,7 +448,6 @@ while running:
 
     # Anzahl Variablen
     draw_text("Münzen: {}".format(coins),pygame.font.Font(None, 36) ,BLACK, 15, 20, window)
-    habs = count_habs(houses, villas, mansions, manors)
     draw_text("Einwohner: {}".format(habs), pygame.font.Font(None, 36), BLACK,15, 60, window)
     
     if messageboxtext == "Du brauchst 200 Münzen, Parks und genug Einwohner, um eine Fabrik zu kaufen":
