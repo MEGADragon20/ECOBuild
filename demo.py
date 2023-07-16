@@ -17,15 +17,15 @@ BLACK = (0,0,0)
 GREY = (100, 100, 100)
 
 # Bildpfade
-HOUSE_IMAGE_PATH = "house.png"
-VILLA_IMAGE_PATH = "villa.png"
-MANSION_IMAGE_PATH = "mansion.png"
-MANOR_IMAGE_PATH = "manor.png"
-INDUSTRIAL_UNIT_IMAGE_PATH = "industrial_unit.png"
-FACTORY_IMAGE_PATH = "Factory.png"
-INDUSTRIAL_PLANT_IMAGE_PATH = "industrial_plant.png"
-GARDEN_IMAGE_PATH = "garden.png"
-PARK_IMAGE_PATH = "park.png"
+HOUSE_IMAGE_PATH = "pictures/house.png"
+VILLA_IMAGE_PATH = "pictures/villa.png"
+MANSION_IMAGE_PATH = "pictures/mansion.png"
+MANOR_IMAGE_PATH = "pictures/manor.png"
+INDUSTRIAL_UNIT_IMAGE_PATH = "pictures/industrial_unit.png"
+FACTORY_IMAGE_PATH = "pictures/factory.png"
+INDUSTRIAL_PLANT_IMAGE_PATH = "pictures/industrial_plant.png"
+GARDEN_IMAGE_PATH = "pictures/garden.png"
+PARK_IMAGE_PATH = "pictures/park.png"
 
 # Start Variablen
 coins = 80
@@ -377,7 +377,7 @@ while running:
                 for tester in factories:
                     if tester != factories:
                         if factory.rect.colliderect(tester):
-                            new_industrial_plant = Mansion(tester.rect.x, tester.rect.y)
+                            new_industrial_plant = Industrial_Plant(tester.rect.x, tester.rect.y)
                             industrial_plants.append(new_industrial_plant)
                             if factory in factories:
                                 factories.remove(factory)
