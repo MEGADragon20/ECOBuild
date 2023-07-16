@@ -26,7 +26,7 @@ GARDEN_IMAGE_PATH = "garden.png"
 PARK_IMAGE_PATH = "park.png"
 
 #Geld
-coins = 80
+coins = 1000
 
 # Fenster erstellen
 window = pygame.display.set_mode(WINDOW_SIZE)
@@ -36,9 +36,6 @@ pygame.display.set_caption("ECOBuild")
 house_image = pygame.image.load(HOUSE_IMAGE_PATH)
 villa_image = pygame.image.load(VILLA_IMAGE_PATH)
 mansion_image = pygame.image.load(MANSION_IMAGE_PATH)
-pygame.transform.scale(house_image,(128,128))
-pygame.transform.scale(villa_image,(128,128))
-pygame.transform.scale(mansion_image,(128,128))
 
 # Fabrikbilder laden
 industrial_unit_image = pygame.image.load(INDUSTRIAL_UNIT_IMAGE_PATH)
