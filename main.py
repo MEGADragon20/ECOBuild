@@ -314,26 +314,32 @@ while running:
                         if house.rect.colliderect(tester):
                             new_villa = Villa(tester.rect.x, tester.rect.y)
                             villas.append(new_villa)
-                            houses.remove(house)
-                            houses.remove(tester)
-            # Überprüfen auf Zusammenführung der Fabriken
+                            if house in houses:
+                                houses.remove(house)
+                            if tester in houses:
+                                houses.remove(tester)
+            # Überprüfen auf Zusammenführung der IU
             for industrial_unit in industrial_units:
                 for tester in industrial_units:
                     if tester != industrial_unit:
                         if industrial_unit.rect.colliderect(tester):
                             new_Factory = Factory(tester.rect.x, tester.rect.y)
                             factories.append(new_Factory)
-                            industrial_units.remove(industrial_unit)
-                            industrial_units.remove(tester)
-            # Überprüfen auf Zusammenführung der Parks
+                            if industrial_unit in industrial_units:
+                                industrial_units.remove(industrial_unit)
+                            if tester in industrial_units: 
+                                industrial_units.remove(tester)
+            # Überprüfen auf Zusammenführung der Gärten
             for garden in gardens:
                 for tester in gardens:
                     if tester != garden:
                         if garden.rect.colliderect(tester):
                             new_park = Park(tester.rect.x, tester.rect.y)
                             parks.append(new_park)
-                            gardens.remove(garden)
-                            gardens.remove(tester)
+                            if garden in gardens:
+                                gardens.remove(garden)
+                            if garden in gardens:
+                                gardens.remove(tester)
             # Überprüfen auf Zusammenführung der Villen
             for villa in villas:
                 for tester in villas:
@@ -341,8 +347,10 @@ while running:
                         if villa.rect.colliderect(tester):
                             new_mansion = Mansion(tester.rect.x, tester.rect.y)
                             mansions.append(new_mansion)
-                            villas.remove(villa)
-                            villas.remove(tester)
+                            if villa in villas:
+                                villas.remove(villa)
+                            if tester in villas:
+                                villas.remove(tester)
             # Überprüfen auf Zusammenführung der Mansionen
             for mansion in mansions:
                 for tester in mansions:
@@ -352,7 +360,8 @@ while running:
                             manors.append(new_manor)
                             if mansion in mansions:
                                 mansions.remove(mansion)
-                            mansions.remove(tester)
+                            if tester in mansions:
+                                mansions.remove(tester)
 
         elif event.type == pygame.MOUSEMOTION:
             # Gebäude verschieben, wenn sie gezogen werden
