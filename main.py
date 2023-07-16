@@ -387,7 +387,7 @@ while running:
                     park.rect.y += event.rel[1]
 
         elif event.type == 618:
-            coins += earn(houses, villas, mansions, factories, industrial_units)
+            coins += earn(houses, villas, mansions, manors, industrial_units, factories)
             messageboxtext = None
         
     window.blit(bg, (0,0))
