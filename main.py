@@ -26,8 +26,9 @@ FACTORY_IMAGE_PATH = "Factory.png"
 GARDEN_IMAGE_PATH = "garden.png"
 PARK_IMAGE_PATH = "park.png"
 
-#Geld
-coins = 1000
+# Start Variablen
+coins = 80
+habs = 0
 
 # Fenster erstellen
 bg = pygame.image.load("background.png")
@@ -187,8 +188,11 @@ def message_box(txt, font, surface):
     surface.blit(text_surface, text_rect)
 
 # Anzahl Geld pro minute
-def earn(houses, villas, mansions, factories, industrial_units):
+def earn(houses, villas, mansions, manors, industrial_units, factories):
     return len(houses) * 20 + len(villas) * 60 + len(mansions) * 150 + len(manors) * 350+ len(factories) * 100 + len(industrial_units) * 150
+
+def count_habs(houses, villas, mansions, manors):
+    return len(houses) * 2 + len(villas) * 3 + len(mansions) * 4 + len(manors) * 5
 
 # Zeit konfiguration
 pygame.time.set_timer(618, 60000)
@@ -440,8 +444,10 @@ while running:
         pygame.draw.rect(window, GREY, button_park_rect, 0,5)
     window.blit(button_park_text, button_park_rect)
 
-    # Geldanzahl
+    # Anzahl Variablen
     draw_text("Münzen: {}".format(coins),pygame.font.Font(None, 36) ,BLACK, 15, 20, window)
+    habs = count_habs(houses, villas, mansions, manors)
+    draw_text("Einwohner: {}".format(habs), pygame.font.Font(None, 36), BLACK,15, 60, window)
     
     if messageboxtext is not None:
         message_box(messageboxtext, pygame.font.Font(None, 16), window)
