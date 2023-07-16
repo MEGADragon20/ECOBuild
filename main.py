@@ -30,10 +30,10 @@ GARDEN_IMAGE_PATH = "garden.png"
 PARK_IMAGE_PATH = "park.png"
 
 #Geld
-coins = 80
+coins = 1000
 
 # Fenster erstellen
-window = pygame.display.set_mode(WINDOW_SIZE)
+window = pygame.display.set_mode((WINDOW_SIZE), pygame.FULLSCREEN)
 pygame.display.set_caption("ECOBuild")
 
 # Hausbilder laden
