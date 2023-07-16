@@ -181,10 +181,10 @@ def draw_text(text, font, color, x, y, surface):
     text_rect.topleft = (x, y)
     surface.blit(text_surface, text_rect)
 
-def message_box(txt, font, surface):
+def message_box(txt, font, space, surface):
     text_surface = font.render(txt, True, BLACK)
     text_rect = text_surface.get_rect()
-    text_rect.topleft = (400, 16)
+    text_rect.topleft = (space, 16)
     surface.blit(text_surface, text_rect)
 
 # Anzahl Geld pro minute
@@ -262,7 +262,7 @@ while running:
                     new_industrial_unit = Industrial_unit(x2,y2)
                     industrial_units.append(new_industrial_unit)
                 else:
-                    messageboxtext = "Du brauchst 200 Münzen, um eine Fabrik zu kaufen und du baue Parks um die Umwelt nicht zu sehr zu belasten"
+                    messageboxtext = "Du brauchst 200 Münzen, Parks und genug Einwohner, um eine Fabrik zu kaufen"
                 
             # Prüfen, ob der Park kaufen Button geklickt wurde
             if button_park_rect.collidepoint(event.pos):
@@ -449,8 +449,11 @@ while running:
     habs = count_habs(houses, villas, mansions, manors)
     draw_text("Einwohner: {}".format(habs), pygame.font.Font(None, 36), BLACK,15, 60, window)
     
-    if messageboxtext is not None:
-        message_box(messageboxtext, pygame.font.Font(None, 16), window)
+    if messageboxtext == "Du brauchst 200 Münzen, Parks und genug Einwohner, um eine Fabrik zu kaufen":
+        message_box(messageboxtext, pygame.font.Font(None, 16), 300, window)
+
+    elif messageboxtext is not None:
+        message_box(messageboxtext, pygame.font.Font(None, 16), 400, window)
 
 
     # Fenster aktualisieren
