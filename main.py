@@ -27,7 +27,7 @@ GARDEN_IMAGE_PATH = "garden.png"
 PARK_IMAGE_PATH = "park.png"
 
 #Geld
-coins = 1000
+coins = 80
 
 # Fenster erstellen
 window = pygame.display.set_mode(WINDOW_SIZE)
@@ -207,8 +207,8 @@ while running:
                     break
             # Prüfen, ob das Mausereignis innerhalb einer Herrenhaus stattfindet
             for manor in manors:
-                if mansion.rect.collidepoint(event.pos):
-                    mansion.dragging = True
+                if manor.rect.collidepoint(event.pos):
+                    manor.dragging = True
                     break
             # Prüfen, ob das Mausereignis innerhalb eines zusätzlichen IU stattfindet
             for industrial_unit in industrial_units:
