@@ -21,13 +21,15 @@ HOUSE_IMAGE_PATH = "house.png"
 VILLA_IMAGE_PATH = "villa.png"
 MANSION_IMAGE_PATH = "mansion.png"
 MANOR_IMAGE_PATH = "manor.png"
-INDUSTRIAL_UNIT_IMAGE_PATH = "Industrial_unit.png"
+INDUSTRIAL_UNIT_IMAGE_PATH = "industrial_unit.png"
 FACTORY_IMAGE_PATH = "Factory.png"
+INDUSTRIAL_PLANT_IMAGE_PATH = "industrial_plant.png"
 GARDEN_IMAGE_PATH = "garden.png"
 PARK_IMAGE_PATH = "park.png"
 
 # Start Variablen
 coins = 80
+
 habs = 0
 
 # Fenster erstellen
@@ -45,6 +47,7 @@ manor_image = pygame.image.load(MANOR_IMAGE_PATH)
 # Fabrikbilder laden
 industrial_unit_image = pygame.image.load(INDUSTRIAL_UNIT_IMAGE_PATH)
 Factory_image = pygame.image.load(FACTORY_IMAGE_PATH)
+industrial_plant_image = pygame.image.load(INDUSTRIAL_PLANT_IMAGE_PATH)
 
 # Parkbilder laden
 garden_image = pygame.image.load(GARDEN_IMAGE_PATH)
@@ -109,6 +112,17 @@ class Factory:
 
     def draw(self, surface):
         surface.blit(Factory_image, self.rect)
+    
+class Industrial_Plant:
+    def __init__(self, x, y):
+        self.rect = industrial_plant_image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.dragging = False
+
+    def draw(self, surface):
+        surface.blit(industrial_plant_image, self.rect)
+
 
 class Garden:
     def __init__(self, x, y):
@@ -141,6 +155,7 @@ mansions = []
 manors = []
 industrial_units = []
 factories = []
+industrial_plants = []
 gardens = []
 parks = []
 
@@ -189,7 +204,7 @@ def message_box(txt, font, space, surface):
 
 # Anzahl Geld pro minute
 def earn(houses, villas, mansions, manors, industrial_units, factories):
-    return len(houses) * 20 + len(villas) * 60 + len(mansions) * 150 + len(manors) * 350+ len(factories) * 100 + len(industrial_units) * 150
+    return len(houses) * 20 + len(villas) * 60 + len(mansions) * 150 + len(manors) * 350 + len(industrial_units) * 100 + len(factories) * 220 + len(industrial_plants) * 500
 
 def count_habs(houses, villas, mansions, manors):
     return len(houses) * 2 + len(villas) * 3 + len(mansions) * 4 + len(manors) * 5
@@ -200,6 +215,7 @@ pygame.time.set_timer(618, 60000)
 # Hauptschleife
 running = True
 while running:
+    habs = count_habs(houses, villas, mansions, manors)
     # Ereignisse überprüfen
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -235,6 +251,11 @@ while running:
                 if factory.rect.collidepoint(event.pos):
                     factory.dragging = True
                     break
+            # Prüfen, ob das Mausereignis innerhalb einer IP stattfindet
+            for industrial_plant in industrial_plants:
+                if industrial_plant.rect.collidepoint(event.pos):
+                    industrial_plant.dragging = True
+                    break
             # Prüfen, ob das Mausereignis innerhalb eines zusätzlichen Gartens stattfindet
             for garden in gardens:
                 if garden.rect.collidepoint(event.pos):
@@ -256,7 +277,7 @@ while running:
                     messageboxtext = "Du brauchst 80 Münzen, um ein Haus zu kaufen"
             # Prüfen, ob der Fabrik kaufen Button geklickt wurde
             if button_factory_rect.collidepoint(event.pos):
-                if coins >= 200 and len(gardens) + len(parks)*2 >= len(industrial_units) + len(factories):
+                if coins >= 200 and len(gardens) + len(parks)*2 >= len(industrial_units) + len(factories) and habs > len(industrial_units) * 1 + len(factories) * 2 + len(industrial_plants) * 4:
                     coins -=200
                     x2, y2 = locate_place()
                     new_industrial_unit = Industrial_unit(x2,y2)
@@ -300,56 +321,79 @@ while running:
                 industrial_unit.dragging = False
             for factory in factories:
                 factory.dragging = False
+            for industrial_plant in industrial_plants:
+                industrial_plant.dragging = False
             for garden in gardens:
                 garden.dragging = False
             for park in parks:
                 park.dragging = False
 
-            # Überprüfen auf Zusammenführung der Häuser
+            # Überprüfen auf Zusammenführung der Häuser (LVL 1 -> LVL 2)
             for house in houses:
                 for tester in houses:
                     if tester != house:
                         if house.rect.colliderect(tester):
                             new_villa = Villa(tester.rect.x, tester.rect.y)
                             villas.append(new_villa)
-                            houses.remove(house)
-                            houses.remove(tester)
-            # Überprüfen auf Zusammenführung der Fabriken
+                            if house in houses:
+                                houses.remove(house)
+                            if tester in houses:
+                                houses.remove(tester)
+            # Überprüfen auf Zusammenführung der IU (LVL 1 -> LVL 2)
             for industrial_unit in industrial_units:
                 for tester in industrial_units:
                     if tester != industrial_unit:
                         if industrial_unit.rect.colliderect(tester):
                             new_Factory = Factory(tester.rect.x, tester.rect.y)
                             factories.append(new_Factory)
-                            industrial_units.remove(industrial_unit)
-                            industrial_units.remove(tester)
-            # Überprüfen auf Zusammenführung der Parks
+                            if industrial_unit in industrial_units:
+                                industrial_units.remove(industrial_unit)
+                            if tester in industrial_units: 
+                                industrial_units.remove(tester)
+            # Überprüfen auf Zusammenführung der Gärten (LVL 1 -> LVL 2)
             for garden in gardens:
                 for tester in gardens:
                     if tester != garden:
                         if garden.rect.colliderect(tester):
                             new_park = Park(tester.rect.x, tester.rect.y)
                             parks.append(new_park)
-                            gardens.remove(garden)
-                            gardens.remove(tester)
-            # Überprüfen auf Zusammenführung der Villen
+                            if garden in gardens:
+                                gardens.remove(garden)
+                            if garden in gardens:
+                                gardens.remove(tester)
+            # Überprüfen auf Zusammenführung der Villen (LVL 2 -> LVL 3)
             for villa in villas:
                 for tester in villas:
                     if tester != villa:
                         if villa.rect.colliderect(tester):
                             new_mansion = Mansion(tester.rect.x, tester.rect.y)
                             mansions.append(new_mansion)
-                            villas.remove(villa)
-                            villas.remove(tester)
-            # Überprüfen auf Zusammenführung der Mansionen
+                            if villa in villas:
+                                villas.remove(villa)
+                            if tester in villas:
+                                villas.remove(tester)
+            # Überprüfen auf Zusammenführung der Villen (LVL 2 -> LVL 3)
+            for factory in factories:
+                for tester in factories:
+                    if tester != factories:
+                        if factory.rect.colliderect(tester):
+                            new_industrial_plant = Mansion(tester.rect.x, tester.rect.y)
+                            industrial_plants.append(new_industrial_plant)
+                            if factory in factories:
+                                factories.remove(factory)
+                            if tester in factories:
+                                factories.remove(tester)
+            # Überprüfen auf Zusammenführung der Mansionen (LVL 3 -> LVL 4)
             for mansion in mansions:
                 for tester in mansions:
                     if tester != mansion:
                         if mansion.rect.colliderect(tester):
                             new_manor = Manor(tester.rect.x, tester.rect.y)
                             manors.append(new_manor)
-                            mansions.remove(mansion)
-                            mansions.remove(tester)
+                            if mansion in mansions:
+                                mansions.remove(mansion)
+                            if tester in mansions:
+                                mansions.remove(tester)
 
         elif event.type == pygame.MOUSEMOTION:
             # Gebäude verschieben, wenn sie gezogen werden
@@ -377,6 +421,10 @@ while running:
                 if factory.dragging:
                     factory.rect.x += event.rel[0]
                     factory.rect.y += event.rel[1]
+            for industrial_plant in industrial_plants:
+                if industrial_plant.dragging:
+                    industrial_plant.rect.x += event.rel[0]
+                    industrial_plant.rect.y += event.rel[1]
             for garden in gardens:
                 if garden.dragging:
                     garden.rect.x += event.rel[0]
@@ -391,6 +439,10 @@ while running:
             messageboxtext = None
         
     window.blit(bg, (0,0))
+
+    # IP zeichnen
+    for industrial_plant in industrial_plants:
+        industrial_plant.draw(window)
 
     # Fabriken zeichnen
     for factory in factories:
@@ -446,7 +498,6 @@ while running:
 
     # Anzahl Variablen
     draw_text("Münzen: {}".format(coins),pygame.font.Font(None, 36) ,BLACK, 15, 20, window)
-    habs = count_habs(houses, villas, mansions, manors)
     draw_text("Einwohner: {}".format(habs), pygame.font.Font(None, 36), BLACK,15, 60, window)
     
     if messageboxtext == "Du brauchst 200 Münzen, Parks und genug Einwohner, um eine Fabrik zu kaufen":
