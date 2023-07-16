@@ -36,6 +36,9 @@ pygame.display.set_caption("ECOBuild")
 house_image = pygame.image.load(HOUSE_IMAGE_PATH)
 villa_image = pygame.image.load(VILLA_IMAGE_PATH)
 mansion_image = pygame.image.load(MANSION_IMAGE_PATH)
+pygame.transform.scale(house_image,(128,128))
+pygame.transform.scale(villa_image,(128,128))
+pygame.transform.scale(mansion_image,(128,128))
 
 # Fabrikbilder laden
 industrial_unit_image = pygame.image.load(INDUSTRIAL_UNIT_IMAGE_PATH)
@@ -148,8 +151,8 @@ button_park_rect.center = (WIDTH // 2, HEIGHT - 50)
 
 # Leeren Platz finden 
 def locate_place():
-    a = r.randint(64, 960)
-    b = r.randint(64, 702)
+    a = r.randint(80, 944)
+    b = r.randint(80, 702)
     for house in houses:
         if a == house.rect.x and b == house.rect.y or a == house.rect.x +64 and b == house.rect.y +64:
             return locate_place()
