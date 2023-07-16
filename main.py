@@ -20,6 +20,7 @@ GREY = (100, 100, 100)
 HOUSE_IMAGE_PATH = "house.png"
 VILLA_IMAGE_PATH = "villa.png"
 MANSION_IMAGE_PATH = "mansion.png"
+MANOR_IMAGE_PATH = "manor.png"
 INDUSTRIAL_UNIT_IMAGE_PATH = "Industrial_unit.png"
 FACTORY_IMAGE_PATH = "Factory.png"
 GARDEN_IMAGE_PATH = "garden.png"
@@ -36,6 +37,7 @@ pygame.display.set_caption("ECOBuild")
 house_image = pygame.image.load(HOUSE_IMAGE_PATH)
 villa_image = pygame.image.load(VILLA_IMAGE_PATH)
 mansion_image = pygame.image.load(MANSION_IMAGE_PATH)
+manor_image = pygame.image.load(MANOR_IMAGE_PATH)
 
 # Fabrikbilder laden
 industrial_unit_image = pygame.image.load(INDUSTRIAL_UNIT_IMAGE_PATH)
@@ -74,6 +76,16 @@ class Mansion:
 
     def draw(self, surface):
         surface.blit(mansion_image, self.rect)
+
+class Manor:
+    def __init__(self, x, y):
+        self.rect = manor_image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.dragging = False
+
+    def draw(self, surface):
+        surface.blit(manor_image, self.rect)
 
 class Industrial_unit:
     def __init__(self, x, y):
@@ -123,6 +135,7 @@ start_house2 = House(WIDTH // 2, HEIGHT // 2 - house_image.get_height())
 houses = [start_house1, start_house2]
 villas = []
 mansions = []
+manors = []
 industrial_units = []
 factories = []
 gardens = []
@@ -164,7 +177,7 @@ def draw_text(text, font, color, x, y, surface):
 
 # Anzahl Geld pro minute
 def earn(houses, villas, mansions, factories, industrial_units):
-    return len(houses) * 20 + len(villas) * 60 + len(mansions) * 150 + len(factories) * 100 + len(industrial_units) * 150
+    return len(houses) * 20 + len(villas) * 60 + len(mansions) * 150 + len(manors) * 350+ len(factories) * 100 + len(industrial_units) * 150
 
 # Zeit konfiguration
 pygame.time.set_timer(618, 60000)
@@ -189,6 +202,11 @@ while running:
                     break
             # Prüfen, ob das Mausereignis innerhalb einer Mansion stattfindet
             for mansion in mansions:
+                if mansion.rect.collidepoint(event.pos):
+                    mansion.dragging = True
+                    break
+            # Prüfen, ob das Mausereignis innerhalb einer Herrenhaus stattfindet
+            for manor in manors:
                 if mansion.rect.collidepoint(event.pos):
                     mansion.dragging = True
                     break
@@ -242,6 +260,8 @@ while running:
                 villa.dragging = False
             for mansion in mansions:
                 mansion.dragging = False
+            for manor in manors:
+                manor.dragging = False
             for industrial_unit in industrial_units:
                 industrial_unit.dragging = False
             for factory in factories:
@@ -287,6 +307,15 @@ while running:
                             mansions.append(new_mansion)
                             villas.remove(villa)
                             villas.remove(tester)
+            # Überprüfen auf Zusammenführung der Mansionen
+            for mansion in mansions:
+                for tester in mansions:
+                    if tester != mansion:
+                        if mansion.rect.colliderect(tester):
+                            new_manor = Manor(tester.rect.x, tester.rect.y)
+                            manors.append(new_manor)
+                            mansions.remove(mansion)
+                            mansions.remove(tester)
 
         elif event.type == pygame.MOUSEMOTION:
             # Gebäude verschieben, wenn sie gezogen werden
@@ -302,6 +331,10 @@ while running:
                 if mansion.dragging:
                     mansion.rect.x += event.rel[0]
                     mansion.rect.y += event.rel[1]
+            for manor in manors:
+                if manor.dragging:
+                    manor.rect.x += event.rel[0]
+                    manor.rect.y += event.rel[1]
             for industrial_unit in industrial_units:
                 if industrial_unit.dragging:
                     industrial_unit.rect.x += event.rel[0]
@@ -327,7 +360,11 @@ while running:
 
     # Fabriken zeichnen
     for factory in factories:
-        factory.draw(window)   
+        factory.draw(window)  
+    
+    # Herrenhäuser zeichnen
+    for manor in manors:
+        manor.draw(window)
 
     # Mansion zeichnen
     for mansion in mansions:
