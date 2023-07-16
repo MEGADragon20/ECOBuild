@@ -2,9 +2,6 @@ import pygame
 import os
 import random as r
 import time
-import tkinter as tk
-from tkinter import *
-from tkinter import messagebox
 
 # Initialisierung von Pygame
 pygame.init()
@@ -144,6 +141,9 @@ factories = []
 gardens = []
 parks = []
 
+# Error text
+messageboxtext = None
+
 # Button_Haus erstellen
 button_house_font = pygame.font.SysFont('impact', 32)
 button_house_text = button_house_font.render("  Haus", True, WHITE)
@@ -176,6 +176,12 @@ def draw_text(text, font, color, x, y, surface):
     text_surface = font.render(text, True, color)
     text_rect = text_surface.get_rect()
     text_rect.topleft = (x, y)
+    surface.blit(text_surface, text_rect)
+
+def message_box(txt, font, surface):
+    text_surface = font.render(txt, True, BLACK)
+    text_rect = text_surface.get_rect()
+    text_rect.topleft = (400, 16)
     surface.blit(text_surface, text_rect)
 
 # Anzahl Geld pro minute
@@ -241,8 +247,7 @@ while running:
                     new_house = House(x2,y2)
                     houses.append(new_house)
                 else:
-                    Tk().wm_withdraw()
-                    messagebox.showerror("Error", "Du brauchst 80 Münzen, um ein Haus zu kaufen")
+                    messageboxtext = "Du brauchst 80 Münzen, um ein Haus zu kaufen"
             # Prüfen, ob der Fabrik kaufen Button geklickt wurde
             if button_factory_rect.collidepoint(event.pos):
                 if coins >= 200 and len(gardens) + len(parks)*2 >= len(industrial_units) + len(factories):
@@ -251,11 +256,7 @@ while running:
                     new_industrial_unit = Industrial_unit(x2,y2)
                     industrial_units.append(new_industrial_unit)
                 else:
-                    Tk().wm_withdraw()
-                    messagebox.showerror("Error", "Du brauchst 200 Münzen, um eine Fabrik zu kaufen und du baue Parks um die Umwelt nicht zu sehr zu belasten")
-
-
-
+                    messageboxtext = "Du brauchst 200 Münzen, um eine Fabrik zu kaufen und du baue Parks um die Umwelt nicht zu sehr zu belasten"
                 
             # Prüfen, ob der Park kaufen Button geklickt wurde
             if button_park_rect.collidepoint(event.pos):
@@ -265,8 +266,7 @@ while running:
                     new_garden = Garden(x2,y2)
                     gardens.append(new_garden)
                 else:
-                    Tk().wm_withdraw()
-                    messagebox.showerror("Error", "Du brauchst 150 Münzen, um ein Park zu kaufen")
+                    messageboxtext = "Du brauchst 150 Münzen, um ein Park zu kaufen"
 
         elif event.type == pygame.MOUSEBUTTONUP:
             # Beenden des Ziehens aller Gebäude
@@ -370,6 +370,7 @@ while running:
 
         elif event.type == 618:
             coins += earn(houses, villas, mansions, factories, industrial_units)
+            messageboxtext = None
 
     # Hintergrund färben
     window.fill(GREEN)
@@ -429,6 +430,9 @@ while running:
     # Geldanzahl
     draw_text("Münzen: {}".format(coins),pygame.font.Font(None, 36) ,BLACK, 15, 20, window)
     
+    if messageboxtext is not None:
+        message_box(messageboxtext, pygame.font.Font(None, 16), window)
+
     # Fenster aktualisieren
     pygame.display.update()
 
