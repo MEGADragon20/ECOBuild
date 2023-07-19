@@ -26,6 +26,7 @@ FACTORY_IMAGE_PATH = "pictures/factory.png"
 INDUSTRIAL_PLANT_IMAGE_PATH = "pictures/industrial_plant.png"
 GARDEN_IMAGE_PATH = "pictures/garden.png"
 PARK_IMAGE_PATH = "pictures/park.png"
+FOREST_IMAGE_PATH = "pictures/forest.png"
 
 # Start Variablen
 coins = 80
@@ -52,6 +53,7 @@ industrial_plant_image = pygame.image.load(INDUSTRIAL_PLANT_IMAGE_PATH)
 # Parkbilder laden
 garden_image = pygame.image.load(GARDEN_IMAGE_PATH)
 park_image = pygame.image.load(PARK_IMAGE_PATH)
+forest_image = pygame.image.load(FOREST_IMAGE_PATH)
 
 class House:
     def __init__(self, x, y):
@@ -144,6 +146,16 @@ class Park:
     def draw(self, surface):
         surface.blit(park_image, self.rect)
 
+class Forest:
+    def __init__(self, x, y):
+        self.rect = forest_image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.dragging = False
+
+    def draw(self, surface):
+        surface.blit(forest_image, self.rect)
+
 # Start-Häuser erstellen
 start_house1 = House(WIDTH // 2 - house_image.get_width() - 30, HEIGHT // 2 - house_image.get_height() + 20)
 start_house2 = House(WIDTH // 2, HEIGHT // 2 - house_image.get_height())
@@ -158,6 +170,7 @@ factories = []
 industrial_plants = []
 gardens = []
 parks = []
+forests = []
 
 # Error text
 messageboxtext = None
@@ -183,7 +196,7 @@ button_park_rect.center = (WIDTH // 2, HEIGHT - 50)
 # Leeren Platz finden 
 def locate_place():
     a = r.randint(80, 944)
-    b = r.randint(80, 702)
+    b = r.randint(80, 630)
     for house in houses:
         if a == house.rect.x and b == house.rect.y or a == house.rect.x +64 and b == house.rect.y +64:
             return locate_place()
@@ -266,6 +279,10 @@ while running:
                 if park.rect.collidepoint(event.pos):
                     park.dragging = True
                     break
+            for forest in forests:
+                if forest.rect.collidepoint(event.pos):
+                    forest.dragging = True
+                    break
             # Prüfen, ob der Haus kaufen Button geklickt wurde
             if button_house_rect.collidepoint(event.pos):
                 if coins >= 80:
@@ -297,7 +314,7 @@ while running:
 
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_f:
-                # Überprüfe den aktuellen Fenstermodus
+                # Überprüfe den aktuellen Fenstermod us
                 if is_fullscreen:
                     # Wenn Vollbildmodus aktiv ist, wechsle zu Fenstermodus
                     pygame.display.set_mode(WINDOW_SIZE, pygame.RESIZABLE)
@@ -327,6 +344,8 @@ while running:
                 garden.dragging = False
             for park in parks:
                 park.dragging = False
+            for forest in forests:
+                forest.dragging = False
 
             # Überprüfen auf Zusammenführung der Häuser (LVL 1 -> LVL 2)
             for house in houses:
@@ -344,11 +363,11 @@ while running:
                 for tester in industrial_units:
                     if tester != industrial_unit:
                         if industrial_unit.rect.colliderect(tester):
-                            new_Factory = Factory(tester.rect.x, tester.rect.y)
-                            factories.append(new_Factory)
+                            new_factory = Factory(tester.rect.x, tester.rect.y)
+                            factories.append(new_factory)
                             if industrial_unit in industrial_units:
                                 industrial_units.remove(industrial_unit)
-                            if tester in industrial_units: 
+                            if tester in industrial_units:
                                 industrial_units.remove(tester)
             # Überprüfen auf Zusammenführung der Gärten (LVL 1 -> LVL 2)
             for garden in gardens:
@@ -359,7 +378,7 @@ while running:
                             parks.append(new_park)
                             if garden in gardens:
                                 gardens.remove(garden)
-                            if garden in gardens:
+                            if tester in gardens:
                                 gardens.remove(tester)
             # Überprüfen auf Zusammenführung der Villen (LVL 2 -> LVL 3)
             for villa in villas:
@@ -372,10 +391,10 @@ while running:
                                 villas.remove(villa)
                             if tester in villas:
                                 villas.remove(tester)
-            # Überprüfen auf Zusammenführung der Villen (LVL 2 -> LVL 3)
+            # Überprüfen auf Zusammenführung der Fabriken (LVL 2 -> LVL 3)
             for factory in factories:
                 for tester in factories:
-                    if tester != factories:
+                    if tester != factory:
                         if factory.rect.colliderect(tester):
                             new_industrial_plant = Industrial_Plant(tester.rect.x, tester.rect.y)
                             industrial_plants.append(new_industrial_plant)
@@ -383,6 +402,17 @@ while running:
                                 factories.remove(factory)
                             if tester in factories:
                                 factories.remove(tester)
+            # Überprüfen auf Zusammenführung der Parks (LVL 2 -> LVL 3)
+            for park in parks:
+                for tester in parks:
+                    if tester != park:
+                        if park.rect.colliderect(tester):
+                            new_forest = Forest(tester.rect.x, tester.rect.y)
+                            forests.append(new_forest)
+                            if park in parks:
+                                parks.remove(park)
+                            if tester in parks:
+                                parks.remove(tester)
             # Überprüfen auf Zusammenführung der Mansionen (LVL 3 -> LVL 4)
             for mansion in mansions:
                 for tester in mansions:
@@ -433,6 +463,10 @@ while running:
                 if park.dragging:
                     park.rect.x += event.rel[0]
                     park.rect.y += event.rel[1]
+            for forest in forests:
+                if forest.dragging:
+                    forest.rect.x += event.rel[0]
+                    forest.rect.y += event.rel[1]     
 
         elif event.type == 618:
             coins += earn(houses, villas, mansions, manors, industrial_units, factories)
@@ -447,7 +481,11 @@ while running:
     # Fabriken zeichnen
     for factory in factories:
         factory.draw(window)  
-    
+
+    # Zusätzliche IU zeichnen
+    for industrial_unit in industrial_units:
+        industrial_unit.draw(window)
+
     # Herrenhäuser zeichnen
     for manor in manors:
         manor.draw(window)
@@ -460,20 +498,23 @@ while running:
     for villa in villas:
         villa.draw(window)
 
-    # Zusätzliche IU zeichnen
-    for industrial_unit in industrial_units:
-        industrial_unit.draw(window)
-
     # Zusätzliche Häuser zeichnen
     for house in houses:
         house.draw(window)
+    
+    # Wald zeichen
+    for forest in forests:
+        forest.draw(window)
+
+    # Park zeichnen
+    for park in parks:
+        park.draw(window) 
+
     # Garten zeichnen
     for garden in gardens:
         garden.draw(window)
     
-    # Park zeichnen
-    for park in parks:
-        park.draw(window)  
+     
       
     # Haus Button zeichnen
     if coins >= 80:
