@@ -294,7 +294,7 @@ while running:
                     messageboxtext = "Du brauchst 80 Münzen, um ein Haus zu kaufen"
             # Prüfen, ob der Fabrik kaufen Button geklickt wurde
             if button_factory_rect.collidepoint(event.pos):
-                if coins >= 200 and len(gardens) + len(parks)*2 >= len(industrial_units) + len(factories) and habs > len(industrial_units) * 1 + len(factories) * 2 + len(industrial_plants) * 4:
+                if coins >= 200 and len(gardens) + len(parks) * 2 + len(forests) * 4>= len(industrial_units) + len(factories) and habs > len(industrial_units) * 1 + len(factories) * 2 + len(industrial_plants) * 4:
                     coins -=200
                     x2, y2 = locate_place()
                     new_industrial_unit = Industrial_unit(x2,y2)
@@ -524,7 +524,7 @@ while running:
     window.blit(button_house_text, button_house_rect)
 
     # Fabrik Button zeichnen
-    if coins >= 200 and len(gardens) + len(parks)*2 >= len(industrial_units) + len(factories):
+    if coins >= 200 and len(gardens) + len(parks)*2 + len(forests) * 4>= len(industrial_units) + len(factories)*2 + len(industrial_plants) * 4:
         pygame.draw.rect(window, BLACK, button_factory_rect, 0, 5)
     else:
         pygame.draw.rect(window, GREY, button_factory_rect,0,5)
