@@ -74,13 +74,19 @@ def sort_for_height(liste):
     sorted_greater = sort_for_height(greater_than_pivot)
     return sorted_less + equal_to_pivot + sorted_greater
 
+def paint_street():
+    x = pygame.mouse.get_pos()[0]
+    y = pygame.mouse.get_pos()[1]
+    a = Street(x,y)
+    streets.append(a)
+
         
 
 def earn(houses, villas, mansions, manors, industrial_units, factories):
     return len(houses) * 20 + len(villas) * 60 + len(mansions) * 150 + len(manors) * 350 + len(industrial_units) * 100 + len(factories) * 220 + len(industrial_plants) * 500
 
 def count_habs(houses, villas, mansions, manors):
-    return len(houses) * 2 + len(villas) * 3 + len(mansions) * 4 + len(manors) * 5
+    return len(houses) * 1 + len(villas) * 2 + len(mansions) * 4 + len(manors) * 8
 
 # leeren platz finden
 def locate_place():
@@ -114,6 +120,8 @@ GARDEN_IMAGE_PATH = "pictures/garden.png"
 PARK_IMAGE_PATH = "pictures/park.png"
 FOREST_IMAGE_PATH = "pictures/forest.png"
 
+STREET_IMAGE_PATH = "pictures/street.png"
+
 #Bildgrößen 
 HOUSE_WIDTH = 84
 HOUSE_HEIGHT = 76
@@ -137,7 +145,7 @@ FOREST_WIDTH = 48
 FOREST_HEIGHT = 34
 
 # Start Variablen
-coins = 80000
+coins = 80
 habs = 0
 
 buildings = []
@@ -151,6 +159,8 @@ industrial_plants = []
 gardens = []
 parks = []
 forests = []
+
+streets = []
 
 # Klassen
 class House:
@@ -283,6 +293,16 @@ class Forest:
     def draw(self, surface):
         surface.blit(load_image(FOREST_IMAGE_PATH), self.rect)
 
+class Street:
+    def __init__(self, x, y):
+        self.rect = load_image(FOREST_IMAGE_PATH).get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.dragging = False
+
+    def draw(self, surface):
+        surface.blit(load_image(STREET_IMAGE_PATH), self.rect)
+
 # Fenster erstellen
 bg = pygame.image.load("background.png")
 window = pygame.display.set_mode(WINDOW_SIZE)
@@ -301,8 +321,12 @@ houses.append(start_house2)
 buildings.append(start_house1)
 buildings.append(start_house2)
 
-# Error text
+# init -> none everything
 messageboxtext = None
+street_draw = False
+street_erase = False
+street_drawing = True
+street_erasing = True
 
 # Button_Haus erstellen
 button_house_font = pygame.font.SysFont('impact', 32)
@@ -362,6 +386,8 @@ while running:
                     buildings.append(new_garden)
                 else:
                     messageboxtext = "Du brauchst 150 Münzen, um ein Park zu kaufen"
+            if street_draw:
+                street_drawing = True
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_f:
                 # Überprüfe den aktuellen Fenstermod us
@@ -373,6 +399,22 @@ while running:
                     # Wenn Fenstermodus aktiv ist, wechsle zu Vollbildmodus
                     pygame.display.set_mode(WINDOW_SIZE, pygame.FULLSCREEN)
                     is_fullscreen = True
+            elif event.key == pygame.K_ESCAPE:
+                    if is_fullscreen:
+                        pygame.display.set_mode(WINDOW_SIZE, pygame.RESIZABLE)
+                        is_fulscreen = False
+            elif event.key == pygame.K_s:
+                if street_draw:
+                    street_draw = False
+                else:
+                    street_draw = True
+            elif event.key == pygame.K_d:
+                if street_erase:
+                    street_erase = False
+                else:
+                    street_erase = True
+            elif event.key == pygame.K_q:
+                running = False
         elif event.type == pygame.MOUSEBUTTONUP:
             stop_dragging(buildings)
             merge(houses, Villa, villas, VILLA_HEIGHT, VILLA_WIDTH)
@@ -387,7 +429,13 @@ while running:
         elif event.type == 618:
             coins += earn(houses, villas, mansions, manors, industrial_units, factories)
             messageboxtext = None
+    if street_draw:
+        paint_street()
+    
     window.blit(bg, (0,0))
+
+    for street in streets:
+        street.draw(window)
 
     draw_buildings(buildings, window)
 
