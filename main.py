@@ -223,7 +223,7 @@ def count_habs(houses, villas, mansions, manors):
     return len(houses) * 2 + len(villas) * 3 + len(mansions) * 4 + len(manors) * 5
 
 # Zeit konfiguration
-pygame.time.set_timer(618, 60000)
+pygame.time.set_timer(618, 30000)
 
 # Hauptschleife
 running = True
